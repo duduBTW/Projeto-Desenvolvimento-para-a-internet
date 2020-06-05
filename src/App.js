@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Provider } from "react-redux";
+import {
+  set as setCookie,
+  get as getCookie,
+  remove as removeCookie,
+} from "es-cookie";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Routes from "./Routes";
+
+class App extends Component {
+  state = {
+    user: null,
+  };
+
+  componentWillMount() {
+    const userCookies = {
+      email: getCookie("email"),
+      id: getCookie("id"),
+      userName: getCookie("name"),
+      token: getCookie("token"),
+    };
+
+    this.setState({
+      user: userCookies,
+    });
+  }
+
+  render() {
+    const { user } = this.state;
+    const setUser = (novoUser) => {
+      console.log(novoUser);
+      this.setState({ user: novoUser });
+    };
+
+    const logOout = () => {
+      removeCookie("token");
+      removeCookie("email");
+      removeCookie("name");
+      removeCookie("id");
+      this.setState({ user: null });
+    };
+
+    return <Routes user={user} logOout={logOout} setUser={setUser} />;
+  }
 }
 
 export default App;
